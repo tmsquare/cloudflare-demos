@@ -42,7 +42,7 @@ $ docker run -d -p 3000:3000 tmsquare/mockoon-image
 ```
 # Authenticate and set the project ID
 $ gcloud auth login
-$ gcloud config get-value PROJECT_ID
+$ gcloud config set project PROJECT_ID
 
 # Create a Docker repository in Artifact Registry
 $ gcloud artifacts repositories create mockoon-docker-repo --repository-format=docker \
@@ -60,7 +60,7 @@ $ gcloud builds submit --region=us-west2 --tag us-west2-docker.pkg.dev/PROJECT_I
 ## 3. Create a Cloud Run service to publicly expose the API server
 ```
 gcloud run deploy mockoon-image	\
- --image us-west2-docker.pkg.dev/PROJECT_ID/mockoon-docker-repo/mockoon-image:latest
+ --image us-west2-docker.pkg.dev/PROJECT_ID/mockoon-docker-repo/mockoon-image:latest \
  --port='3000' \
  --allow-unauthenticated
 ```
