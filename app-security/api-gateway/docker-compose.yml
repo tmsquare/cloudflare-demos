@@ -20,7 +20,7 @@ services:
     container_name: 'tunnel'
     image: 'cloudflare/cloudflared:latest'
     restart: 'on-failure'
-    command: 'tunnel --no-autoupdate run --token <token>'
+    command: 'tunnel --no-autoupdate run --token eyJhIjoiZGQ4YjdmZmU4YjUwMzA4NzBlNmJmYTljNDNkZjJkYzEiLCJ0IjoiNDI3MTQwZTEtN2YyMC00YWQ5LThjNWItYWYwNjBkYWRiNjMxIiwicyI6IlkyUXhabU00WVRjdE5UVTRaQzAwT0dNMExUZ3pZbU10TUdFeFpUUTVNMlkyTkRKaSJ9'
     environment:
       - 'TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query'
     networks:
@@ -29,6 +29,9 @@ services:
 networks:
   cloudflared:
     name: 'cloudflared'
+
+
+
 
 
 
