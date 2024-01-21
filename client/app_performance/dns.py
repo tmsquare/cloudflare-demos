@@ -4,22 +4,47 @@ import json
 
 
 class DNS:
+    '''
+    #############    GET FUNCTIONS   ###############
+    list_dns_records(zone_name="example.com")
+    list_zones(account_id="xxxxxxxx")
+    get_analytics_report(zone_name="example.com")
+    get_dnssec_details(zone_name="example.com")
+    get_dns_record_details(zone_name="example.com", record_id="xxxxxxx")
+    get_zone_details_by_name(zone_name="example.com")
+    export_dns_records(zone_name="example.com")
 
+
+    #############    POST FUNCTIONS   ###############
+    edit_dnssec_details(zone_name="example.com", status="active")
+    create_dns_record(zone_name="example.com", type="A", content="76.76.21.21", name="test.com")
+    create_zone(account_id="xxxxxxx", name="example.com", type="partial")
+    import_dns_records(zone_name="example.com", file="../../assets/file.txt")
+    create_multiple_zones(account_id="xxxxxx", zones=ZONES)
+
+
+    #############    DELETE FUNCTIONS   ###############
+    delete_zone(zone_id="xxxxxxx")
+    delete_dns_record(zone_name="example.com", record_id="xxxxxxx")
+    delete_multiple_zones(zones=ZONES)
+
+
+    #############    UPDATE FUNCTIONS   ###############
+    update_dns_record(zone_name="example.com", record_id="xxxxxxx", type="CNAME", content="test.com", name="api.example.com")
+    '''
+    
     def __init__(self, **kwargs):
         self.url = "https://api.cloudflare.com/client/v4"
-        self.zone_id = kwargs.get('zone_id')
         self.headers = {
             "Content-Type": "application/json", 
             "X-Auth-Email": os.environ.get("CF_EMAIL") ,
             "X-Auth-Key": os.environ.get("CF_API_KEY") 
         }
-    
-    #############  
-    #############    GET METHODS   ###############
-    #############
         
-    def list_dns_records(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dns_records", headers=self.headers)
+    #############    GET FUNCTIONS   ###############
+    def list_dns_records(self, **kwargs):
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dns_records", headers=self.headers)
 
         if response.status_code == 200:
             return (response.json())            
@@ -27,8 +52,9 @@ class DNS:
             print(f"Error: {response.status_code}")
             print(response.text)
 
-    def get_analytics_report(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dns_analytics/report", headers=self.headers)
+    def get_analytics_report(self, **kwargs):
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dns_analytics/report", headers=self.headers)
 
         if response.status_code == 200:
             return (response.json())
@@ -36,8 +62,9 @@ class DNS:
             print(f"Error: {response.status_code}")
             print(response.text)
 
-    def get_analytics_report_bytime(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dns_analytics/report/bytime", headers=self.headers)
+    def get_analytics_report_bytime(self, **kwargs):
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dns_analytics/report/bytime", headers=self.headers)
 
         if response.status_code == 200:
             return (response.json())
@@ -46,8 +73,9 @@ class DNS:
             print(response.text)
 
 
-    def get_dnssec_details(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dnssec", headers=self.headers)
+    def get_dnssec_details(self, **kwargs):
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dnssec", headers=self.headers)
 
         if response.status_code == 200:
             return (response.json())
@@ -55,8 +83,9 @@ class DNS:
             print(f"Error: {response.status_code}")
             print(response.text)
 
-    def export_dns_records(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dns_records/export", headers=self.headers)
+    def export_dns_records(self, **kwargs):
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dns_records/export", headers=self.headers)
 
         if response.status_code == 200:
             with open('dns_records.txt', 'w') as file:
@@ -67,7 +96,8 @@ class DNS:
             print(response.text)
     
     def get_dns_record_details(self, **kwargs):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}/dns_records/{kwargs.get('id')}", headers=self.headers)
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.get(f"{self.url}/zones/{zone_id}/dns_records/{kwargs.get('record_id')}", headers=self.headers)
 
         if response.status_code == 200:
             return (response.json())
@@ -94,20 +124,9 @@ class DNS:
             print(f"Error: {response.status_code}")
             print(response.text)
 
-    def get_zone_details_by_id(self):
-        response = requests.get(f"{self.url}/zones/{self.zone_id}", headers=self.headers)
 
-        if response.status_code == 200:
-            return (response.json())
-        else:
-            print(f"Error: {response.status_code}")
-            print(response.text)
-
-
-    #############  
-    #############    PUT METHODS   ###############
-    #############
-            
+ 
+    #############    PUT FUNCTIONS   ###############
     def update_dns_record(self, **kwargs):
         
         req_data = {
@@ -117,7 +136,8 @@ class DNS:
             "proxied": kwargs.get('proxied', True)
         }
         
-        response = requests.put(f"{self.url}/zones/{self.zone_id}/dns_records/{kwargs.get('id')}", headers=self.headers, json=req_data)
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.put(f"{self.url}/zones/{zone_id}/dns_records/{kwargs.get('record_id')}", headers=self.headers, json=req_data)
         if response.status_code == 200:
             print(json.dumps(response.json(), indent=2))
             return (response.json())
@@ -127,33 +147,7 @@ class DNS:
 
 
 
-    #############  
-    #############    PATCH METHODS   ###############
-    #############
-            
-    def edit_dnssec_details(self, **kwargs):
-        
-        req_data = {
-            "dnssec_multi_signer": kwargs.get('multi_signer', False), 
-            "dnssec_presigned"   : kwargs.get('presigned', True),
-            "status"             : kwargs.get('status', "disabled") 
-        }
-        
-        response = requests.put(f"{self.url}/zones/{self.zone_id}/dnssec", headers=self.headers, json=req_data)
-        if response.status_code == 200:
-            print(json.dumps(response.json(), indent=2))
-            
-        else:
-            print(f"Error: {response.status_code}")
-            print(response.text)
-
-    
-
-
-    #############    
-    #############   POST METHODS   ###############
-    ############# 
-
+    #############    POST FUNCTIONS   ###############
     def create_dns_record(self, **kwargs):
         
         req_data = {
@@ -163,7 +157,8 @@ class DNS:
             "proxied": kwargs.get('proxied', True)
         }
         
-        response = requests.post(f"{self.url}/zones/{self.zone_id}/dns_records", headers=self.headers, json=req_data)
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.post(f"{self.url}/zones/{zone_id}/dns_records", headers=self.headers, json=req_data)
         if response.status_code == 200:
             print(json.dumps(response.json(), indent=2))
             return (response.json())
@@ -176,7 +171,8 @@ class DNS:
         self.headers["Content-Type"] = "multipart/form-data"
         with open(kwargs.get('file'), 'rb') as file:
             files = {'file': file}
-            response = requests.post(f"{self.url}/zones/{self.zone_id}/dns_records/import", headers=self.headers, files=files)
+            zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+            response = requests.post(f"{self.url}/zones/{zone_id}/dns_records/import", headers=self.headers, files=files)
         
         if response.status_code == 200:
             print("Records successfully updated")
@@ -239,14 +235,11 @@ class DNS:
 
 
     
-    
-    #############    
-    #############   DELETE METHODS   ###############
-    ############# 
-            
+    #############   DELETE FUNCTIONS   ###############
     def delete_dns_record(self, **kwargs):
         
-        response = requests.delete(f"{self.url}/zones/{self.zone_id}/dns_records/{kwargs.get('id')}", headers=self.headers)
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.delete(f"{self.url}/zones/{zone_id}/dns_records/{kwargs.get('record_id')}", headers=self.headers)
         if response.status_code == 200:
             print("Successfully deleted")
         else:
@@ -274,3 +267,25 @@ class DNS:
             else:
                 print(f"Error: {response.status_code}")
                 print(response.text)
+
+
+    #############  
+    #############    PATCH METHODS   ###############
+    #############
+            
+    def edit_dnssec_details(self, **kwargs):
+        
+        req_data = {
+            "dnssec_multi_signer": kwargs.get('multi_signer', False), 
+            "dnssec_presigned"   : kwargs.get('presigned', True),
+            "status"             : kwargs.get('status', "disabled") 
+        }
+        
+        zone_id = self.get_zone_details_by_name(zone_name=kwargs.get('zone_name'))['result'][0]["id"]
+        response = requests.put(f"{self.url}/zones/{zone_id}/dnssec", headers=self.headers, json=req_data)
+        if response.status_code == 200:
+            print(json.dumps(response.json(), indent=2))
+            
+        else:
+            print(f"Error: {response.status_code}")
+            print(response.text)

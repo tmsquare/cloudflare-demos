@@ -20,33 +20,33 @@ Cloudflare DNS is an enterprise-grade authoritative DNS service that offers the 
 ## 2. Zone setups
 ### 2.1 Authoritative DNS
 You can use Cloudflare as your primary DNS provider and manage your DNS records on Cloudflare
-![Primary DNS](../assets/auth_dns.png)
+![Primary DNS](../../assets/auth_dns.png)
 
 ### 2.2 Secondary DNS
 With incoming zone transfers, you can keep your primary DNS provider and use Cloudflare as a secondary DNS provider.
-![Secondary DNS](../assets/secondary_dns.png)
+![Secondary DNS](../../assets/secondary_dns.png)
 
 ## 3. Getting started
 
 ### 3.1 Create a full setup zone
-Go back to the previous folder, edit the `main.py` file with the following code:
+Go back to the parent folder, edit the `main.py` file with the following code:
 ```
-import json
-from modules.dns import DNS
+from client.cf_client import Client
 
 ZONES = [("YOUR_DOMAIN", "full")]
 
-dns = DNS()
+# Create a zone 
+dns = Client(scope="dns").get()
 dns.create_multiple_zones(account_id="YOUR_ACCOUNT_ID", zones=ZONES)
 
 # Add an A record
-dns.create_dns_record(type="A", content="76.76.21.21", name="YOUR_DOMAIN") 
+dns.create_dns_record(zone_name="YOUR_DOMAIN", type="A", content="76.76.21.21", name="YOUR_DOMAIN") 
 ```
 
 Export your credentials and execute the script:
 ```
 $ export CF_API_KEY="xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-$ export CF_EMAIL="xxxxxx@cloudflare.com"
+$ export CF_EMAIL="xxxxxx@xyz.yz"
 
 python3 main.py
 ```
