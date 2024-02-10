@@ -4,11 +4,6 @@ from client.app_security.api_gateway import APIGateway
 
 
 class Client:
-    ''' 
-    #############    GET FUNCTIONS   ###############
-    list_load_balancers(zone_name="example.com")
-    '''
-
     def __init__(self, **kwargs):
         self.scope = kwargs.get('scope')
         self.get()

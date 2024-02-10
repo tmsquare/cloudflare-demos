@@ -29,7 +29,7 @@ With incoming zone transfers, you can keep your primary DNS provider and use Clo
 ## 3. Getting started
 
 ### 3.1 Create a full setup zone
-Go back to the parent folder, edit the `main.py` file with the following code:
+Go back to the parent folder of this github repository, edit the `main.py` file with the following code:
 ```
 from client.cf_client import Client
 

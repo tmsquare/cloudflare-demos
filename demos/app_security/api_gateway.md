@@ -1,5 +1,5 @@
 
-# Demo setup
+# API Gateway Demo Setup
 
 Cloudflare API Gateway protects your API from malicious traffic with API Discovery, Schema Validation, mTLS validation, and more. It also helps to maintain high performing APIs with powerful monitoring and management. 
 
