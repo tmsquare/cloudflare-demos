@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-domain="YOUR_DOMAIN"
-iterations=2000
+domain="tmsquare.net"
+iterations=10000
 
 # Sequence  1
 for ((i=1; i<=$iterations; i++)); do
